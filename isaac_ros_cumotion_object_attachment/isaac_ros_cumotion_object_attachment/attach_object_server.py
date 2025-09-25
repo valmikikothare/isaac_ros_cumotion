@@ -7,17 +7,21 @@
 # without an express license agreement from NVIDIA CORPORATION or
 # its affiliates is strictly prohibited.
 
-from copy import deepcopy
-from enum import Enum
 import os
 import struct
 import threading
 import time
 import traceback
+from copy import deepcopy
+from enum import Enum
 from typing import Dict, List, Tuple, Union
 
-from action_msgs.msg import GoalStatus
 import cupy as cp
+import numpy as np
+import rclpy
+import torch
+import trimesh
+from action_msgs.msg import GoalStatus
 from curobo.cuda_robot_model.cuda_robot_model import CudaRobotModel
 from curobo.geom.types import Cuboid as CuCuboid
 from curobo.geom.types import Mesh as CuMesh
@@ -28,19 +32,17 @@ from curobo.types.math import Pose as CuPose
 from curobo.types.robot import RobotConfig
 from curobo.types.state import JointState as CuJointState
 from cv_bridge import CvBridge
-from geometry_msgs.msg import Point, PointStamped
-from geometry_msgs.msg import Pose, Vector3
+from geometry_msgs.msg import Point, PointStamped, Pose, Vector3
 from hdbscan import HDBSCAN as cpu_HDBSCAN
 
 # from isaac_ros_common.qos import add_qos_parameter
 from isaac_ros_cumotion.update_kinematics import get_robot_config
 from isaac_ros_cumotion.util import get_spheres_marker
-from isaac_ros_cumotion_interfaces.action import AttachObject
-from isaac_ros_cumotion_interfaces.action import UpdateLinkSpheres
+from isaac_ros_cumotion_interfaces.action import (
+    AttachObject,
+    UpdateLinkSpheres,
+)
 from message_filters import ApproximateTimeSynchronizer, Subscriber
-import numpy as np
-from nvblox_msgs.srv import EsdfAndGradients
-import rclpy
 from rclpy.action import ActionClient, ActionServer, GoalResponse
 from rclpy.action.server import ServerGoalHandle
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
@@ -61,10 +63,7 @@ from std_msgs.msg import Header
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
-import torch
-import trimesh
 from visualization_msgs.msg import Marker, MarkerArray
-
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
@@ -456,6 +455,8 @@ class AttachObjectServer(Node):
 
         # Create esdf action client
         if self.__trigger_aabb_object_clearing:
+            from nvblox_msgs.srv import EsdfAndGradients
+
             esdf_service_name = "nvblox_node/get_esdf_and_gradient"
             esdf_service_cb_group = MutuallyExclusiveCallbackGroup()
             self.__esdf_client = self.create_client(

@@ -9,14 +9,6 @@
   <url type="website">https://developer.nvidia.com/isaac-ros-gems/</url>
   <author>Balakumar Sundaralingam</author>
 
-  <depend>message_filters</depend>
-  <depend>moveit_msgs</depend>
-  <depend>nvblox_msgs</depend>
-  <depend>shape_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>trajectory_msgs</depend>
-  <depend>visualization_msgs</depend>
 
   <build_depend>isaac_ros_cumotion_interfaces</build_depend>
 
@@ -26,6 +18,14 @@
   <exec_depend>isaac_ros_cumotion_python_utils</exec_depend>
   <exec_depend>isaac_ros_cumotion_robot_description</exec_depend>
   <exec_depend>ros2launch</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>moveit_msgs</exec_depend>
+  <!-- <exec_depend>nvblox_msgs</exec_depend> -->
+  <exec_depend>shape_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

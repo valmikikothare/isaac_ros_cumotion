@@ -29,20 +29,21 @@
   <url type="website">https://developer.nvidia.com/isaac-ros-gems/</url>
   <author>Animesh Singhal</author>
 
-  <depend>curobo_core</depend>
-  <depend>isaac_ros_cumotion</depend>
-  <depend>isaac_ros_cumotion_interfaces</depend>
-  <depend>isaac_manipulator_ros_python_utils</depend>
-  <depend>isaac_ros_cumotion_robot_description</depend>
-  <depend>isaac_ros_launch_utils</depend>
-  <depend>rclpy</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>action_msgs</build_depend>
-  <build_depend>rosidl_default_generators</build_depend>
   <!-- <build_depend>isaac_ros_common</build_depend> -->
 
+  <exec_depend>action_msgs</exec_depend>
+  <exec_depend>rosidl_default_generators</exec_depend>
+  <exec_depend>curobo_core</exec_depend>
+  <exec_depend>isaac_ros_cumotion</exec_depend>
+  <exec_depend>isaac_ros_cumotion_interfaces</exec_depend>
+  <exec_depend>isaac_manipulator_ros_python_utils</exec_depend>
+  <exec_depend>isaac_ros_cumotion_robot_description</exec_depend>
+  <exec_depend>isaac_ros_launch_utils</exec_depend>
+
+  <exec_depend>rclpy</exec_depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
