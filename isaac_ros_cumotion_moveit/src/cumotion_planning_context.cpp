@@ -17,33 +17,28 @@
 
 #include "isaac_ros_cumotion_moveit/cumotion_planning_context.hpp"
 
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
-bool CumotionPlanningContext::solve(planning_interface::MotionPlanDetailedResponse & res)
-{
-  return cumotion_interface_->solve(planning_scene_, request_, res);
+void CumotionPlanningContext::solve(
+    planning_interface::MotionPlanDetailedResponse& res) {
+  cumotion_interface_->solve(planning_scene_, request_, res);
 }
 
-bool CumotionPlanningContext::solve(planning_interface::MotionPlanResponse & res)
-{
+void CumotionPlanningContext::solve(
+    planning_interface::MotionPlanResponse& res) {
   planning_interface::MotionPlanDetailedResponse res_detailed;
-  bool planning_success = solve(res_detailed);
+  solve(res_detailed);
 
-  res.error_code_ = res_detailed.error_code_;
+  res.error_code = res_detailed.error_code;
 
-  if (planning_success) {
-    res.trajectory_ = res_detailed.trajectory_[0];
-    res.planning_time_ = res_detailed.processing_time_[0];
+  if (res) {
+    res.trajectory = res_detailed.trajectory[0];
+    res.planning_time = res_detailed.processing_time[0];
   }
-
-  return planning_success;
 }
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia

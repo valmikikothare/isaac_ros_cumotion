@@ -20,41 +20,32 @@
 
 #include <memory>
 
-#include "moveit/planning_interface/planning_interface.h"
-#include "rclcpp/rclcpp.hpp"
-
 #include "isaac_ros_cumotion_moveit/cumotion_move_group_client.hpp"
 
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
-class CumotionInterface
-{
-public:
-  CumotionInterface(const rclcpp::Node::SharedPtr & node)
-  : node_(node),
-    action_client_(std::make_shared<CumotionMoveGroupClient>(node))
-  {
+class CumotionInterface {
+ public:
+  CumotionInterface(const rclcpp::Node::SharedPtr& node)
+      : node_(node),
+        action_client_(std::make_shared<CumotionMoveGroupClient>(node)) {
   }
 
-  bool solve(
-    const planning_scene::PlanningSceneConstPtr & planning_scene,
-    const planning_interface::MotionPlanRequest & request,
-    planning_interface::MotionPlanDetailedResponse & response);
+  bool solve(const planning_scene::PlanningSceneConstPtr& planning_scene,
+             const planning_interface::MotionPlanRequest& request,
+             planning_interface::MotionPlanDetailedResponse& response);
 
   bool planner_busy = false;
 
-private:
+ private:
   std::shared_ptr<rclcpp::Node> node_;
   std::shared_ptr<CumotionMoveGroupClient> action_client_;
 };
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia
 
-#endif  // ISAAC_ROS_CUMOTION_INTERFACE_H
+#endif // ISAAC_ROS_CUMOTION_INTERFACE_H

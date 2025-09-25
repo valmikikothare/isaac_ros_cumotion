@@ -19,47 +19,49 @@ import importlib.util
 from pathlib import Path
 import sys
 
-from ament_index_python.packages import get_resource
+# from ament_index_python.packages import get_resource
 from setuptools import setup
 
-ISAAC_ROS_COMMON_PATH = get_resource(
-    'isaac_ros_common_scripts_path',
-    'isaac_ros_common'
-)[0]
+# ISAAC_ROS_COMMON_PATH = get_resource(
+#     'isaac_ros_common_scripts_path',
+#     'isaac_ros_common'
+# )[0]
+#
+# ISAAC_ROS_COMMON_VERSION_INFO = Path(ISAAC_ROS_COMMON_PATH) / 'isaac_ros_common-version-info.py'
+#
+# spec = importlib.util.spec_from_file_location(
+#     'isaac_ros_common_version_info',
+#     ISAAC_ROS_COMMON_VERSION_INFO
+# )
+#
+# isaac_ros_common_version_info = importlib.util.module_from_spec(spec)
+# sys.modules['isaac_ros_common_version_info'] = isaac_ros_common_version_info
+# spec.loader.exec_module(isaac_ros_common_version_info)
+#
+# from isaac_ros_common_version_info import GenerateVersionInfoCommand  # noqa: E402, I100
 
-ISAAC_ROS_COMMON_VERSION_INFO = Path(ISAAC_ROS_COMMON_PATH) / 'isaac_ros_common-version-info.py'
-
-spec = importlib.util.spec_from_file_location(
-    'isaac_ros_common_version_info',
-    ISAAC_ROS_COMMON_VERSION_INFO
-)
-
-isaac_ros_common_version_info = importlib.util.module_from_spec(spec)
-sys.modules['isaac_ros_common_version_info'] = isaac_ros_common_version_info
-spec.loader.exec_module(isaac_ros_common_version_info)
-
-from isaac_ros_common_version_info import GenerateVersionInfoCommand  # noqa: E402, I100
-
-package_name = 'isaac_ros_cumotion_python_utils'
+package_name = "isaac_ros_cumotion_python_utils"
 
 setup(
     name=package_name,
-    version='0.0.0',
+    version="0.0.0",
     packages=[package_name],
     data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        (
+            "share/ament_index/resource_index/packages",
+            ["resource/" + package_name],
+        ),
+        ("share/" + package_name, ["package.xml"]),
     ],
-    install_requires=['setuptools'],
+    install_requires=["setuptools"],
     zip_safe=True,
-    maintainer='Isaac ROS Maintainers',
-    maintainer_email='isaac-ros-maintainers@nvidia.com',
-    description='Python utilities used across Isaac ROS cuMotion',
-    license='Apache-2.0',
+    maintainer="Isaac ROS Maintainers",
+    maintainer_email="isaac-ros-maintainers@nvidia.com",
+    description="Python utilities used across Isaac ROS cuMotion",
+    license="Apache-2.0",
     tests_require=[],
     entry_points={},
-    cmdclass={
-        'build_py': GenerateVersionInfoCommand,
-    },
+    # cmdclass={
+    #     'build_py': GenerateVersionInfoCommand,
+    # },
 )

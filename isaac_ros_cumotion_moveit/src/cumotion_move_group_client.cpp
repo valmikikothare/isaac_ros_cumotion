@@ -24,56 +24,50 @@
 
 #include "moveit_msgs/action/move_group.hpp"
 #include "moveit_msgs/msg/planning_options.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
 
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
-namespace
-{
+namespace {
 
 constexpr unsigned kGetGoalWaitIntervalInMs = 10;
 
-}  // namespace
+} // namespace
 
-CumotionMoveGroupClient::CumotionMoveGroupClient(const rclcpp::Node::SharedPtr & node)
-: result_ready(false),
-  success(false),
-  get_goal_handle_(false),
-  get_result_handle_(false),
-  node_(node),
-  client_cb_group_(node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive))
-{
+CumotionMoveGroupClient::CumotionMoveGroupClient(
+    const rclcpp::Node::SharedPtr& node)
+    : result_ready(false),
+      success(false),
+      get_goal_handle_(false),
+      get_result_handle_(false),
+      node_(node),
+      client_cb_group_(node->create_callback_group(
+          rclcpp::CallbackGroupType::MutuallyExclusive)) {
   client_ = rclcpp_action::create_client<moveit_msgs::action::MoveGroup>(
-    node_,
-    "cumotion/move_group",
-    client_cb_group_);
+      node_, "cumotion/move_group", client_cb_group_);
 
-  send_goal_options_ = rclcpp_action::Client<moveit_msgs::action::MoveGroup>::SendGoalOptions();
+  send_goal_options_ =
+      rclcpp_action::Client<moveit_msgs::action::MoveGroup>::SendGoalOptions();
 
-  send_goal_options_.goal_response_callback = std::bind(
-    &CumotionMoveGroupClient::goalResponseCallback, this, std::placeholders::_1);
-  send_goal_options_.feedback_callback = std::bind(
-    &CumotionMoveGroupClient::feedbackCallback, this, std::placeholders::_1, std::placeholders::_2);
+  send_goal_options_.goal_response_callback =
+      std::bind(&CumotionMoveGroupClient::goalResponseCallback, this,
+                std::placeholders::_1);
+  send_goal_options_.feedback_callback =
+      std::bind(&CumotionMoveGroupClient::feedbackCallback, this,
+                std::placeholders::_1, std::placeholders::_2);
   send_goal_options_.result_callback = std::bind(
-    &CumotionMoveGroupClient::resultCallback, this, std::placeholders::_1);
+      &CumotionMoveGroupClient::resultCallback, this, std::placeholders::_1);
 }
 
 void CumotionMoveGroupClient::updateGoal(
-  const planning_scene::PlanningSceneConstPtr & planning_scene,
-  const planning_interface::MotionPlanRequest & req)
-{
+    const planning_scene::PlanningSceneConstPtr& planning_scene,
+    const planning_interface::MotionPlanRequest& req) {
   planning_request_ = req;
   planning_scene->getPlanningSceneMsg(planning_scene_);
 }
 
-bool CumotionMoveGroupClient::sendGoal()
-{
+bool CumotionMoveGroupClient::sendGoal() {
   result_ready = false;
   success = false;
 
@@ -81,7 +75,8 @@ bool CumotionMoveGroupClient::sendGoal()
   plan_options.planning_scene_diff = planning_scene_;
 
   if (!client_->wait_for_action_server()) {
-    RCLCPP_ERROR(node_->get_logger(), "Action server not available after waiting");
+    RCLCPP_ERROR(node_->get_logger(),
+                 "Action server not available after waiting");
     rclcpp::shutdown();
   }
 
@@ -91,21 +86,20 @@ bool CumotionMoveGroupClient::sendGoal()
   goal_msg.request = planning_request_;
   RCLCPP_INFO(node_->get_logger(), "Sending goal");
 
-  auto goal_handle_future = client_->async_send_goal(goal_msg, send_goal_options_);
+  auto goal_handle_future =
+      client_->async_send_goal(goal_msg, send_goal_options_);
   goal_h_ = goal_handle_future;
   get_result_handle_ = true;
   get_goal_handle_ = true;
   return true;
 }
 
-void CumotionMoveGroupClient::getGoal()
-{
+void CumotionMoveGroupClient::getGoal() {
   using namespace std::chrono_literals;
 
   if (get_goal_handle_) {
     if (goal_h_.wait_for(std::chrono::milliseconds(kGetGoalWaitIntervalInMs)) !=
-      std::future_status::ready)
-    {
+        std::future_status::ready) {
       return;
     }
 
@@ -121,9 +115,8 @@ void CumotionMoveGroupClient::getGoal()
   }
 
   if (get_result_handle_) {
-    if (result_future_.wait_for(std::chrono::milliseconds(kGetGoalWaitIntervalInMs)) !=
-      std::future_status::ready)
-    {
+    if (result_future_.wait_for(std::chrono::milliseconds(
+            kGetGoalWaitIntervalInMs)) != std::future_status::ready) {
       return;
     }
 
@@ -149,49 +142,49 @@ void CumotionMoveGroupClient::getGoal()
     }
     get_result_handle_ = false;
   }
-
 }
 
-void CumotionMoveGroupClient::goalResponseCallback(const GoalHandle::SharedPtr & future)
-{
+void CumotionMoveGroupClient::goalResponseCallback(
+    const GoalHandle::SharedPtr& future) {
   auto goal_handle = future.get();
   if (!goal_handle) {
     RCLCPP_ERROR(node_->get_logger(), "Goal was rejected by server");
     result_ready = true;
     success = false;
   } else {
-    RCLCPP_INFO(node_->get_logger(), "Goal accepted by server, waiting for result");
+    RCLCPP_INFO(node_->get_logger(),
+                "Goal accepted by server, waiting for result");
   }
 }
 
 void CumotionMoveGroupClient::feedbackCallback(
-  GoalHandle::SharedPtr,
-  const std::shared_ptr<const moveit_msgs::action::MoveGroup::Feedback> feedback)
-{
+    GoalHandle::SharedPtr,
+    const std::shared_ptr<const moveit_msgs::action::MoveGroup::Feedback>
+        feedback) {
   std::string status = feedback->state;
   RCLCPP_INFO(node_->get_logger(), "Checking status");
   RCLCPP_INFO(node_->get_logger(), status.c_str());
 }
 
-void CumotionMoveGroupClient::resultCallback(const GoalHandle::WrappedResult & result)
-{
+void CumotionMoveGroupClient::resultCallback(
+    const GoalHandle::WrappedResult& result) {
   RCLCPP_INFO(node_->get_logger(), "Received result");
 
   result_ready = true;
   success = false;
 
   switch (result.code) {
-    case rclcpp_action::ResultCode::SUCCEEDED:
-      break;
-    case rclcpp_action::ResultCode::ABORTED:
-      RCLCPP_ERROR(node_->get_logger(), "Goal was aborted");
-      return;
-    case rclcpp_action::ResultCode::CANCELED:
-      RCLCPP_ERROR(node_->get_logger(), "Goal was canceled");
-      return;
-    default:
-      RCLCPP_ERROR(node_->get_logger(), "Unknown result code");
-      return;
+  case rclcpp_action::ResultCode::SUCCEEDED:
+    break;
+  case rclcpp_action::ResultCode::ABORTED:
+    RCLCPP_ERROR(node_->get_logger(), "Goal was aborted");
+    return;
+  case rclcpp_action::ResultCode::CANCELED:
+    RCLCPP_ERROR(node_->get_logger(), "Goal was canceled");
+    return;
+  default:
+    RCLCPP_ERROR(node_->get_logger(), "Unknown result code");
+    return;
   }
 
   plan_response.error_code = result.result->error_code;
@@ -204,6 +197,6 @@ void CumotionMoveGroupClient::resultCallback(const GoalHandle::WrappedResult & r
   }
 }
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia

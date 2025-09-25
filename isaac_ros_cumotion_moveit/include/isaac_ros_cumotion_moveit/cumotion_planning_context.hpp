@@ -21,52 +21,42 @@
 #include <memory>
 #include <string>
 
-#include "moveit/planning_interface/planning_interface.h"
-
 #include "isaac_ros_cumotion_moveit/cumotion_interface.hpp"
+#include "moveit/planning_interface/planning_interface.hpp"
 
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
-class CumotionPlanningContext : public planning_interface::PlanningContext
-{
-public:
-  CumotionPlanningContext(
-    const std::string & context_name,
-    const std::string & group_name,
-    const rclcpp::Node::SharedPtr & node)
-  : planning_interface::PlanningContext(context_name, group_name),
-    cumotion_interface_(std::make_shared<CumotionInterface>(node))
-  {
+class CumotionPlanningContext : public planning_interface::PlanningContext {
+ public:
+  CumotionPlanningContext(const std::string& context_name,
+                          const std::string& group_name,
+                          const rclcpp::Node::SharedPtr& node)
+      : planning_interface::PlanningContext(context_name, group_name),
+        cumotion_interface_(std::make_shared<CumotionInterface>(node)) {
   }
 
-  ~CumotionPlanningContext() override
-  {
+  ~CumotionPlanningContext() override {
   }
 
-  bool solve(planning_interface::MotionPlanResponse & res) override;
+  void solve(planning_interface::MotionPlanResponse& res) override;
 
-  bool solve(planning_interface::MotionPlanDetailedResponse & res) override;
+  void solve(planning_interface::MotionPlanDetailedResponse& res) override;
 
-  bool terminate() override
-  {
+  bool terminate() override {
     return true;
   }
 
-  void clear() override
-  {
+  void clear() override {
   }
 
-private:
+ private:
   std::shared_ptr<CumotionInterface> cumotion_interface_;
 };
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia
 
-#endif  // ISAAC_ROS_CUMOTION_PLANNING_CONTEXT_H
+#endif // ISAAC_ROS_CUMOTION_PLANNING_CONTEXT_H

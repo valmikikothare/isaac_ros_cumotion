@@ -17,50 +17,44 @@
 
 #include "isaac_ros_cumotion_moveit/cumotion_planner_manager.hpp"
 
-#include "moveit/planning_interface/planning_interface.h"
-#include "moveit/planning_scene/planning_scene.h"
+#include "isaac_ros_cumotion_moveit/cumotion_planning_context.hpp"
+#include "moveit/planning_interface/planning_interface.hpp"
+#include "moveit/planning_scene/planning_scene.hpp"
 #include "pluginlib/class_list_macros.hpp"
 
-#include "isaac_ros_cumotion_moveit/cumotion_planning_context.hpp"
-
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
 bool CumotionPlannerManager::initialize(
-  const moveit::core::RobotModelConstPtr & model,
-  const rclcpp::Node::SharedPtr & node,
-  const std::string & parameter_namespace)
-{
+    const moveit::core::RobotModelConstPtr& model,
+    const rclcpp::Node::SharedPtr& node,
+    const std::string& parameter_namespace) {
   node_ = node;
-  for (const std::string & group_name : model->getJointModelGroupNames()) {
-    planning_contexts_[group_name] =
-      std::make_shared<CumotionPlanningContext>("cumotion_planning_context", group_name, node);
+  for (const std::string& group_name : model->getJointModelGroupNames()) {
+    planning_contexts_[group_name] = std::make_shared<CumotionPlanningContext>(
+        "cumotion_planning_context", group_name, node);
   }
-  static_cast<void>(model);  // Suppress "unused" warning.
-  static_cast<void>(parameter_namespace);  // Suppress "unused" warning.
+  static_cast<void>(model);               // Suppress "unused" warning.
+  static_cast<void>(parameter_namespace); // Suppress "unused" warning.
   return true;
 }
 
-std::string CumotionPlannerManager::getDescription() const
-{
+std::string CumotionPlannerManager::getDescription() const {
   return "Generate minimum-jerk trajectories using NVIDIA Isaac ROS cuMotion";
 }
 
-void CumotionPlannerManager::getPlanningAlgorithms(std::vector<std::string> & algs) const
-{
+void CumotionPlannerManager::getPlanningAlgorithms(
+    std::vector<std::string>& algs) const {
   algs.clear();
   algs.push_back(kCumotionPlannerId);
 }
 
-planning_interface::PlanningContextPtr CumotionPlannerManager::getPlanningContext(
-  const planning_scene::PlanningSceneConstPtr & planning_scene,
-  const planning_interface::MotionPlanRequest & req,
-  moveit_msgs::msg::MoveItErrorCodes & error_code) const
-{
+planning_interface::PlanningContextPtr
+CumotionPlannerManager::getPlanningContext(
+    const planning_scene::PlanningSceneConstPtr& planning_scene,
+    const planning_interface::MotionPlanRequest& req,
+    moveit_msgs::msg::MoveItErrorCodes& error_code) const {
   error_code.val = moveit_msgs::msg::MoveItErrorCodes::SUCCESS;
 
   if (!planning_scene) {
@@ -76,7 +70,8 @@ planning_interface::PlanningContextPtr CumotionPlannerManager::getPlanningContex
   }
 
   // Retrieve and configure existing context.
-  const std::shared_ptr<CumotionPlanningContext> & context = planning_contexts_.at(req.group_name);
+  const std::shared_ptr<CumotionPlanningContext>& context =
+      planning_contexts_.at(req.group_name);
 
   context->setPlanningScene(planning_scene);
   context->setMotionPlanRequest(req);
@@ -87,16 +82,14 @@ planning_interface::PlanningContextPtr CumotionPlannerManager::getPlanningContex
 }
 
 void CumotionPlannerManager::setPlannerConfigurations(
-  const planning_interface::PlannerConfigurationMap & pcs)
-{
+    const planning_interface::PlannerConfigurationMap& pcs) {
   planner_configs_ = pcs;
 }
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia
 
 // Register the `CumotionPlannerManager` class as a plugin.
-PLUGINLIB_EXPORT_CLASS(
-  nvidia::isaac::manipulation::CumotionPlannerManager,
-  planning_interface::PlannerManager)
+PLUGINLIB_EXPORT_CLASS(nvidia::isaac::manipulation::CumotionPlannerManager,
+                       planning_interface::PlannerManager)

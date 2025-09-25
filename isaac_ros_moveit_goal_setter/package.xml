@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
-  <depend>isaac_ros_common</depend>
+  <!-- <depend>isaac_ros_common</depend> -->
   <depend>isaac_ros_goal_setter_interfaces</depend>
   <depend>geometry_msgs</depend>
   <depend>moveit_ros_planning_interface</depend>

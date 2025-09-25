@@ -22,56 +22,51 @@
 #include <string>
 #include <vector>
 
-#include "moveit/planning_interface/planning_interface.h"
-#include "moveit/planning_scene/planning_scene.h"
-
 #include "isaac_ros_cumotion_moveit/cumotion_planning_context.hpp"
+#include "moveit/planning_interface/planning_interface.hpp"
+#include "moveit/planning_scene/planning_scene.hpp"
 
-namespace nvidia
-{
-namespace isaac
-{
-namespace manipulation
-{
+namespace nvidia {
+namespace isaac {
+namespace manipulation {
 
-class CumotionPlannerManager : public planning_interface::PlannerManager
-{
+class CumotionPlannerManager : public planning_interface::PlannerManager {
   inline static constexpr char kCumotionPlannerId[] = "cuMotion";
 
-public:
-  CumotionPlannerManager()
-  {
+ public:
+  CumotionPlannerManager() {
   }
 
-  bool initialize(
-    const moveit::core::RobotModelConstPtr & model,
-    const rclcpp::Node::SharedPtr & node,
-    const std::string & parameter_namespace) override;
+  bool initialize(const moveit::core::RobotModelConstPtr& model,
+                  const rclcpp::Node::SharedPtr& node,
+                  const std::string& parameter_namespace) override;
 
-  bool canServiceRequest(const planning_interface::MotionPlanRequest & req) const override
-  {
+  bool canServiceRequest(
+      const planning_interface::MotionPlanRequest& req) const override {
     return req.planner_id == kCumotionPlannerId;
   }
 
   std::string getDescription() const override;
 
-  void getPlanningAlgorithms(std::vector<std::string> & algs) const override;
+  void getPlanningAlgorithms(std::vector<std::string>& algs) const override;
 
   planning_interface::PlanningContextPtr getPlanningContext(
-    const planning_scene::PlanningSceneConstPtr & planning_scene,
-    const planning_interface::MotionPlanRequest & req,
-    moveit_msgs::msg::MoveItErrorCodes & error_code) const override;
+      const planning_scene::PlanningSceneConstPtr& planning_scene,
+      const planning_interface::MotionPlanRequest& req,
+      moveit_msgs::msg::MoveItErrorCodes& error_code) const override;
 
-  void setPlannerConfigurations(const planning_interface::PlannerConfigurationMap & pcs) override;
+  void setPlannerConfigurations(
+      const planning_interface::PlannerConfigurationMap& pcs) override;
 
-private:
+ private:
   std::shared_ptr<rclcpp::Node> node_;
-  std::map<std::string, std::shared_ptr<CumotionPlanningContext>> planning_contexts_;
+  std::map<std::string, std::shared_ptr<CumotionPlanningContext>>
+      planning_contexts_;
   planning_interface::PlannerConfigurationMap planner_configs_;
 };
 
-}  // namespace manipulation
-}  // namespace isaac
-}  // namespace nvidia
+} // namespace manipulation
+} // namespace isaac
+} // namespace nvidia
 
-#endif  // ISAAC_ROS_CUMOTION_PLANNER_MANAGER_H
+#endif // ISAAC_ROS_CUMOTION_PLANNER_MANAGER_H

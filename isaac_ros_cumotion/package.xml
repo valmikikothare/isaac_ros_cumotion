@@ -21,7 +21,7 @@
   <build_depend>isaac_ros_cumotion_interfaces</build_depend>
 
   <exec_depend>curobo_core</exec_depend>
-  <exec_depend>isaac_ros_common</exec_depend>
+  <!-- <exec_depend>isaac_ros_common</exec_depend> -->
   <exec_depend>isaac_ros_cumotion_interfaces</exec_depend>
   <exec_depend>isaac_ros_cumotion_python_utils</exec_depend>
   <exec_depend>isaac_ros_cumotion_robot_description</exec_depend>

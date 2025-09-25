@@ -6,7 +6,7 @@
   <description>Package for ESDF Voxel visualizer.</description>
   <maintainer email="isaac-ros-maintainers@nvidia.com">Isaac ROS Maintainers</maintainer>
   <license>Apache-2.0</license>
-  <build_depend>isaac_ros_common</build_depend>
+  <!-- <build_depend>isaac_ros_common</build_depend> -->
 
   <exec_depend>curobo_core</exec_depend>
   <exec_depend>isaac_ros_cumotion_python_utils</exec_depend>
